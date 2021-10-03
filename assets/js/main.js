@@ -1,8 +1,7 @@
 let size = 16,
-    randomCol = false,
-    singleCol = true,
-    shader = true,
-    eraser = false;
+
+    mode = 1;
+// 1: single, 2: random, 3: shader, 4: eraser
 
 (function addResizeObs(){
   const container = document.querySelector('#container');
@@ -33,7 +32,7 @@ const containerObserver = new ResizeObserver(entries => {
   let gridBoxes = document.querySelectorAll('.box-shell');
   gridBoxes.forEach(box => box.addEventListener('mouseenter', function colorChange(e){
     // shader
-    if(shader){
+    if(mode === 3){
       let currCol = window.getComputedStyle(e.target).getPropertyValue('background-color');
   
       // removes unnecessary strings from the rgba text
@@ -50,7 +49,7 @@ const containerObserver = new ResizeObserver(entries => {
       e.target.style.backgroundColor = newCol;
       
       // colorful
-    } else if (random) {
+    } else if (mode === 2) {
       
       let hex = Math.floor(Math.random() * 16777215).toString(16);
       
@@ -58,12 +57,9 @@ const containerObserver = new ResizeObserver(entries => {
       while (hex.length < 6) {
         hex = `0${hex}`
       }
-      console.log(typeof hex)
-      console.log(hex)
 
       let colorMatch = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
       let result = colorMatch.exec(hex);
-      console.log(result);
 
       let colorObj = {r: parseInt(result[1], 16),
                       g: parseInt(result[2], 16),
@@ -74,11 +70,11 @@ const containerObserver = new ResizeObserver(entries => {
       e.target.style.backgroundColor = newCol;
 
       // done with life
-    } else if (eraser){
+    } else if (mode === 4){
 
       e.target.style.backgroundColor = `rgb(255,255,255)`;
 
-    } else if (singleCol) {
+    } else if (mode === 1) {
       let colorBox = document.querySelector('#color-box');
       let hex = colorBox.value;
       hex = hex.replace('#', '');
@@ -86,7 +82,6 @@ const containerObserver = new ResizeObserver(entries => {
       let colorMatch = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
       let result = colorMatch.exec(hex);
 
-      console.log(result);
       let colorObj = {r: parseInt(result[1], 16),
                       g: parseInt(result[2], 16),
                       b: parseInt(result[3], 16)
@@ -161,12 +156,9 @@ containerObserver.observe(container);
       while (hex.length < 6) {
         hex = `0${hex}`
       }
-      console.log(typeof hex)
-      console.log(hex)
 
       let colorMatch = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
       let result = colorMatch.exec(hex);
-      console.log(result);
 
       let colorObj = {r: parseInt(result[1], 16),
                       g: parseInt(result[2], 16),
@@ -189,7 +181,6 @@ containerObserver.observe(container);
       let colorMatch = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
       let result = colorMatch.exec(hex);
 
-      console.log(result);
       let colorObj = {r: parseInt(result[1], 16),
                       g: parseInt(result[2], 16),
                       b: parseInt(result[3], 16)
@@ -205,64 +196,33 @@ containerObserver.observe(container);
   };
 })();
 
-(function addELRandomBtn(){
-  let randBtn = document.querySelector('#random');
+(function addELModeBtn(){
+  const modeBtn = document.querySelector('#mode');
 
-  randBtn.addEventListener('click', function toggleRandom(e){
-    eraser = false;
-    random = true;
-    singleCol = false;
-    shader = false;
-    console.log('eraser: ', eraser);
-    console.log('random: ', random);
-    console.log('singleCol: ', singleCol);
-    console.log('shader: ', shader);
+  modeBtn.addEventListener('click', function(){
+    let displayText = document.querySelector('#display-text');
+
+    if (mode === 4) { mode = 1 }
+    else { mode++ } 
+
+    if (mode === 1) {
+      displayText.textContent = "Single Color Mode"
+    } else if (mode === 2) {
+      displayText.textContent = "Random Color Mode"
+    } else if (mode === 3) {
+      displayText.textContent = "Shader Mode"
+    } else if (mode === 4) {
+      displayText.textContent = "Eraser Mode"
+    }
   })
 })();
 
-(function addELShaderBtn(){
-  let shadeBtn = document.querySelector('#shader');
+(function addELClearBtn(){
+  const clearBtn = document.querySelector('#clear');
 
-  shadeBtn.addEventListener('click', function toggleShader(){
-    eraser = false;
-    random = false;
-    singleCol = false;
-    shader = true;
-    console.log('eraser: ', eraser);
-    console.log('random: ', random);
-    console.log('singleCol: ', singleCol);
-    console.log('shader: ', shader);
+  clearBtn.addEventListener('click', function clearGrid(){
+    let gridBoxes = document.querySelectorAll('.box-shell');
+
+    gridBoxes.forEach(box => box.style.backgroundColor = 'rgb(255,255,255)');
   })
 })();
-
-(function addELEraser(){
-  let eraseBtn = document.querySelector('#eraser');
-
-  eraseBtn.addEventListener('click', function toggleEraser(){
-    eraser = true;
-    random = false;
-    singleCol = false;
-    shader = false;
-    console.log('eraser: ', eraser);
-    console.log('random: ', random);
-    console.log('singleCol: ', singleCol);
-    console.log('shader: ', shader);
-  })
-})();
-
-// (function addELSingleCol(){
-
-//   let colorPicker = document.querySelector('#color-box');
-
-//   colorPicker.addEventListener('')
-// })
-
-let colPickBtn = document.querySelector('#color-box');
-colPickBtn.addEventListener('click', function(){
-  singleCol = true;
-  eraser = false;
-  random = false;
-  shader = false;
-  console.log('single: ', singleCol, 'eraser: ', eraser, 'random: ', random)
-})
-
